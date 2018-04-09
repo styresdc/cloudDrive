@@ -1,7 +1,7 @@
 #cloudDrive
 #Dixon Styres
 
-import dropbox
+import db
 import os
 
 filedict = {}
@@ -16,16 +16,17 @@ class FileSplit:
         self.service = 0
     def split(self):
         files = open(self.file_path,'r').read().split('Splitting Text')
-        names = ['file'+ str(num) for num in range(len(files))]
+        names = [self.file_path + str(num) for num in range(len(files))]
         for num,file in enumerate(files):
             open(names[num],'w').write(file)
             self.file_count += 1
     def ledgerWrite(self):
             open("ledger.txt",'w').write(str(num_files) + ' ' + str(self.file_count) + ' ' + self.file_path)
     def uploader(self):
+        dbUp = db.TransferData()
         for x in range(0,self.file_count):
             if(x == 0):
-                return
+                dbUp.upload_file(self.file_path + str(x), '/' + self.file_path + str(x))
             elif(x == 1):
                 return
             elif(x == 2):
