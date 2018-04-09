@@ -2,6 +2,7 @@
 #Dixon Styres
 
 import db
+import gd
 import os
 import traceback
 
@@ -25,11 +26,12 @@ class FileSplit:
             open("ledger.txt",'a').write(str(num_files) + ' ' + str(self.file_count) + ' ' + self.file_path + '\n')
     def uploader(self):
         dbUp = db.TransferData()
+        gdUp = gd.TransferData()
         for x in range(0,self.file_count):
             if(x == 0):
                 dbUp.upload_file(self.file_path + str(x), '/' + self.file_path + str(x))
             elif(x == 1):
-                return
+                gdUp.upload_file(self.file_path + str(x))
             elif(x == 2):
                 return
         self.num_files += 1
