@@ -3,6 +3,7 @@
 
 import db
 import os
+import traceback
 
 filedict = {}
 num_files = 0
@@ -21,7 +22,7 @@ class FileSplit:
             open(names[num],'w').write(file)
             self.file_count += 1
     def ledgerWrite(self):
-            open("ledger.txt",'w').write(str(num_files) + ' ' + str(self.file_count) + ' ' + self.file_path)
+            open("ledger.txt",'a').write(str(num_files) + ' ' + str(self.file_count) + ' ' + self.file_path + '\n')
     def uploader(self):
         dbUp = db.TransferData()
         for x in range(0,self.file_count):
@@ -31,6 +32,7 @@ class FileSplit:
                 return
             elif(x == 2):
                 return
+        self.num_files += 1
 #rebuild file parts
 class FileMake:
     def __init__(self, file_name, numbers):
@@ -41,6 +43,7 @@ class FileMake:
             for x in range (0, self.numbers):
                     with open(self.file_name + str(x)) as infile:
                         outfile.write(infile.read())
+
 #read ledger, create dict
 class ledgerRead:
     def __init__(self):
@@ -48,12 +51,14 @@ class ledgerRead:
             for line in f:
                 splitLine = line.split()
                 filedict[int(splitLine[0])] = ",".join(splitLine[1:])
-        num_files = len(filedict)
+        self.num_files = len(filedict)
+
 def main():
     try:
         ledgerRead()
     except:
         print("Unable to load ledger file, starting new")
+        traceback.print_exc()
     #print welcome @ selection
     #list file or upload file
     print("Welcome to cloudDrive....")
@@ -86,8 +91,9 @@ def main():
             try:
                 fileSplitter.split()
                 fileSplitter.ledgerWrite()
+                fileSplitter.uploader()
             except:
                 print("Error Reading Source File")
-            fileSplitter.uploader()
+                traceback.print_exc()
 if __name__ == '__main__':
     main()

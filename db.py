@@ -7,7 +7,7 @@ class TransferData:
             self.access_token = str(os.environ["DBTOKEN"])
         except KeyError:
             print "Please set the environment variable DBTOKEN"
-            sys.exit(1)
+            exit()
 
     def upload_file(self, file_from, file_to):
         """upload a file to Dropbox using API v2
