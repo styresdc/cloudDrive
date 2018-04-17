@@ -3,6 +3,7 @@
 
 import db
 import gd
+import box
 import os
 import traceback
 
@@ -27,14 +28,23 @@ class FileSplit:
     def uploader(self):
         dbUp = db.TransferData()
         gdUp = gd.TransferData()
+        boxUp = box.TransferData()
+        j = 0
         for x in range(0,self.file_count):
-            if(x == 0):
+            if(j == 0):
                 dbUp.upload_file(self.file_path + str(x), '/' + self.file_path + str(x))
-            elif(x == 1):
+                os.remove(self.file_path + str(x))
+                j+=1
+            elif(j == 1):
                 gdUp.upload_file(self.file_path + str(x))
-            elif(x == 2):
-                return
-        self.num_files += 1
+                os.remove(self.file_path + str(x))
+                j+=1
+            elif(j == 2):
+                boxUp.upload_file(self.file_path + str(x))
+                os.remove(self.file_path + str(x))
+                j = 0
+        global num_files
+        num_files += 1        
 #rebuild file parts
 class FileMake:
     def __init__(self, file_name, numbers):
@@ -60,7 +70,7 @@ def main():
         ledgerRead()
     except:
         print("Unable to load ledger file, starting new")
-        traceback.print_exc()
+        #traceback.print_exc()
     #print welcome @ selection
     #list file or upload file
     print("Welcome to cloudDrive....")
@@ -87,6 +97,7 @@ def main():
                     print(filedict[x])
             except:
                 print("Error reading ledger file")
+                traceback.print_exc()
         elif(text == '1'):
             file_path = raw_input("Give Text filepath for upload: ")
             fileSplitter = FileSplit(file_path)
@@ -94,6 +105,11 @@ def main():
                 fileSplitter.split()
                 fileSplitter.ledgerWrite()
                 fileSplitter.uploader()
+                dele = raw_input("Upload complete, Delete local file? y/n")
+                if(dele == "y"):
+                    os.remove(self.file_path + str(x))
+                else:
+                    print("File not deleted")
             except:
                 print("Error Reading Source File")
                 traceback.print_exc()
