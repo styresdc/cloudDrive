@@ -9,6 +9,9 @@ import traceback
 
 filedict = {}
 num_files = 0
+dbUp = db.TransferData()
+gdUp = gd.TransferData()
+boxUp = box.TransferData()
 
 #read in a file and split/upload it to enable aggregation. only text files for now
 #Splits a file on "Split"
@@ -26,9 +29,6 @@ class FileSplit:
     def ledgerWrite(self):
             open("ledger.txt",'a').write(str(num_files) + ' ' + str(self.file_count) + ' ' + self.file_path + '\n')
     def uploader(self):
-        dbUp = db.TransferData()
-        gdUp = gd.TransferData()
-        boxUp = box.TransferData()
         j = 0
         for x in range(0,self.file_count):
             if(j == 0):
@@ -44,17 +44,29 @@ class FileSplit:
                 os.remove(self.file_path + str(x))
                 j = 0
         global num_files
-        num_files += 1        
+        num_files += 1
 #rebuild file parts
 class FileMake:
     def __init__(self, file_name, numbers):
         self.file_name = file_name
-        self.numbers = numbers
+        self.numbers = int(numbers)
     def build(self):
         with open(self.file_name + '_cloud.txt', 'w') as outfile:
             for x in range (0, self.numbers):
                     with open(self.file_name + str(x)) as infile:
                         outfile.write(infile.read())
+    def download(self):
+        j=0
+        for x in range(0, self.numbers):
+            if(j == 0):
+                dbUp.download_file(self.file_name + str(x))
+                j+=1
+            elif(j == 1):
+                gdUp.download_file(self.file_name + str(x))
+                j+=1
+            elif(j == 2):
+                boxUp.download_file(self.file_name + str(x))
+                j=0
 
 #read ledger, create dict
 class ledgerRead:
@@ -82,8 +94,18 @@ def main():
             quit()
         elif(text == '3'):
             #download file
-            file_name = raw_input("Give Filename for download: ")
-            fileBuild = FileMake(file_name, 3)
+            _=os.system("clear")
+            try:
+                ledgerRead()
+                print("Index, Number of parts, File Name")
+                print(filedict)
+            except:
+                print("Error reading ledger file")
+                traceback.print_exc()
+            file_name = raw_input("Give Index for download: ")
+            file_name = filedict[int(file_name)].split(',')
+            fileBuild = FileMake(file_name[1], file_name[0])
+            fileBuild.download()
             fileBuild.build()
         elif(text == '2'):
             _=os.system("clear")

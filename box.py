@@ -31,3 +31,9 @@ class TransferData():
             self.client.folder('0').upload(file_from, file_from, preflight_check=True)
         except:
             pass
+    def download_file(self, file_from):
+        file_list = self.client.folder(folder_id='0').get_items(limit=100, offset=0)
+        print(type(file_list))
+        for file1 in file_list:
+            if(file1['name'] == file_from):
+                self.client.file(file1.content()) #download the file
