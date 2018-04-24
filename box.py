@@ -27,13 +27,19 @@ class TransferData():
             traceback.print_exc()
             exit()
     def upload_file(self, file_from):
+        """upload a file to Box
+        """
         try:
             self.client.folder('0').upload(file_from, file_from, preflight_check=True)
         except:
             pass
     def download_file(self, file_from):
+        """download a file from Box
+        """
         file_list = self.client.folder(folder_id='0').get_items(limit=100, offset=0)
-        print(type(file_list))
         for file1 in file_list:
             if(file1['name'] == file_from):
-                self.client.file(file1.content()) #download the file
+                #print("downloaded from box")
+                with open(file_from, 'wb') as open_file:
+                    self.client.file(file1.id).download_to(open_file)
+                    open_file.close()
