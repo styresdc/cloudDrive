@@ -16,7 +16,7 @@ class TransferData:
 
         with open(file_from, 'rb') as f:
             self.dbx.files_upload(f.read(), file_to)
-
+        os.remove(file_from)
     def download_file(self, file_from):
         """download file from Dropbox
         """

@@ -4,6 +4,7 @@
 # Import two classes from the boxsdk module - Client and OAuth2
 from boxsdk import Client, OAuth2
 import traceback
+import os
 
 class TransferData():
     # Define client ID, client secret, and developer token.
@@ -33,6 +34,7 @@ class TransferData():
             self.client.folder('0').upload(file_from, file_from, preflight_check=True)
         except:
             pass
+        os.remove(file_from)
     def download_file(self, file_from):
         """download a file from Box
         """

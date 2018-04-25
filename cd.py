@@ -6,6 +6,7 @@ import gd
 import box
 import os
 import traceback
+from multiprocessing import Process
 
 filedict = {}
 num_files = 0
@@ -32,17 +33,23 @@ class FileSplit:
         j = 0
         for x in range(0,self.file_count):
             if(j == 0):
-                dbUp.upload_file(self.file_path + str(x), '/' + self.file_path + str(x))
-                os.remove(self.file_path + str(x))
+                t1 = Process(target = dbUp.upload_file, args = (self.file_path + str(x), '/' + self.file_path + str(x)),)
+                #dbUp.upload_file(self.file_path + str(x), '/' + self.file_path + str(x))
+                t1.start()
                 j+=1
             elif(j == 1):
-                gdUp.upload_file(self.file_path + str(x))
-                os.remove(self.file_path + str(x))
+                t2 = Process(target = gdUp.upload_file, args = (self.file_path + str(x),))
+                #gdUp.upload_file(self.file_path + str(x))
+                t2.start()
                 j+=1
             elif(j == 2):
-                boxUp.upload_file(self.file_path + str(x))
-                os.remove(self.file_path + str(x))
+                t3 = Process(target = boxUp.upload_file, args = (self.file_path + str(x),))
+                #boxUp.upload_file(self.file_path + str(x))
+                t3.start()
                 j = 0
+        t1.join()
+        t2.join()
+        t3.join()
         global num_files
         num_files += 1
 #rebuild file parts
@@ -55,18 +62,28 @@ class FileMake:
             for x in range (0, self.numbers):
                     with open(self.file_name + str(x)) as infile:
                         outfile.write(infile.read())
+                        os.remove(self.file_name + str(x))
     def download(self):
         j=0
         for x in range(0, self.numbers):
             if(j == 0):
-                dbUp.download_file(self.file_name + str(x))
+                t1 = Process(target = dbUp.download_file, args = (self.file_name + str(x),))
+                #dbUp.download_file(self.file_name + str(x))
+                t1.start()
                 j+=1
             elif(j == 1):
-                gdUp.download_file(self.file_name + str(x))
+                t2 = Process(target = gdUp.download_file, args = (self.file_name + str(x),))
+                #gdUp.download_file(self.file_name + str(x))
+                t2.start()
                 j+=1
             elif(j == 2):
-                boxUp.download_file(self.file_name + str(x))
+                t3 = Process(target = boxUp.download_file, args = (self.file_name + str(x),))
+                #boxUp.download_file(self.file_name + str(x))
+                t3.start()
                 j=0
+        t1.join()
+        t2.join()
+        t3.join()
 
 #read ledger, create dict
 class ledgerRead:
@@ -87,7 +104,7 @@ def main():
     #list file or upload file
     print("Welcome to cloudDrive....")
     while(True):
-        print("Select '1' to upload , '2' to list files , '3' to donwnload, '4' to quit.")
+        print("Select '1' to upload , '2' to list files , '3' to download, '4' to quit.")
         text = raw_input("Make a Selection ")
         if(text == '4'):
             print("Goodbye")

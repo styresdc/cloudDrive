@@ -3,6 +3,7 @@
 
 from pydrive.drive import GoogleDrive
 from pydrive.auth import GoogleAuth
+import os
 
 class TransferData():
     def __init__(self):
@@ -14,6 +15,7 @@ class TransferData():
         file1 = self.drive.CreateFile({'title': file_from})
         file1.SetContentFile(file_from)
         file1.Upload()
+        os.remove(file_from)
     def download_file(self, file_from):
         """download a file from drive
         """
