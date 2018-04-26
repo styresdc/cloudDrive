@@ -17,7 +17,7 @@ class TransferData():
                 self.CLIENT_ID = box_cfg.readline().rstrip('\n')
                 self.CLIENT_SECRET = box_cfg.readline().rstrip('\n')
                 self.ACCESS_TOKEN = box_cfg.readline().rstrip('\n')
-                # Create OAuth2 object. It's already authenticated, thanks to the developer token.
+                # Create OAuth2 object.
                 self.oauth2 = OAuth2(self.CLIENT_ID, self.CLIENT_SECRET, access_token=self.ACCESS_TOKEN)
 
                 # Create the authenticated client
@@ -45,3 +45,10 @@ class TransferData():
                 with open(file_from, 'wb') as open_file:
                     self.client.file(file1.id).download_to(open_file)
                     open_file.close()
+    def delete_file(self, file_from):
+        """delete file from box
+        """
+        file_list = self.client.folder(folder_id='0').get_items(limit=100, offset=0)
+        for file1 in file_list:
+            if(file1['name'] == file_from):
+                self.client.file(file1.id).delete()

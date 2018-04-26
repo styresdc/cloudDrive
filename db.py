@@ -9,15 +9,20 @@ class TransferData:
             print "Please set the environment variable DBTOKEN"
             exit()
         self.dbx = dropbox.Dropbox(self.access_token)
-
     def upload_file(self, file_from, file_to):
         """upload a file to Dropbox
         """
 
         with open(file_from, 'rb') as f:
-            self.dbx.files_upload(f.read(), file_to)
+            self.dbx.files_upload(f.read(), file_to,mode=dropbox.files.WriteMode('overwrite', None))
+        if(file_from == "ledger.txt"):
+            return
         os.remove(file_from)
     def download_file(self, file_from):
         """download file from Dropbox
         """
         self.dbx.files_download_to_file(file_from, '/' + file_from)
+    def delete_file(self, file_from):
+        """delete file from Dropbox
+        """
+        self.dbx.files_delete('/' + file_from)
