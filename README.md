@@ -1,6 +1,6 @@
 # cloudDrive
 
-Tool to aggregate storage across multiple cloud providers.
+Tool to aggregate storage across multiple cloud providers. Multithreaded and chunk use for speed.
 
 Using Box, Google Drive, and Dropbox python modules.
 
